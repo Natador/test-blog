@@ -15,6 +15,12 @@
     <main>
       <h2>{{ .Title }}</h2>
       {{ .Content }}
+
+      <ul>
+      {{ range (where site.RegularPages "Type" "in" "posts") }}
+        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{ end }}
+      </ul>
     </main>
 
     <footer>
