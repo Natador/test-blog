@@ -1,3 +1,20 @@
-baseURL = ""
+baseURL = "natador.com"
 languageCode = "en-us"
 title = "Natador's Blog"
+theme = "hugo-kiera"
+
+pygmentsCodeFences = true
+
+#disqusShortname = "" #Disqus shortname
+#googleAnalytics = "" #Google Analytics ID
+
+[author]
+    name = "Nathaniel Cantwell"           #Author name
+    github = "natador"         #Github username
+    gitlab = "natador"         #Gitlab username
+    #twitter = "killbot4590"        #Twitter username
+
+[params]
+    tagline = "Personal blog for Natador"
+    disableDarkModeCSS = true # disables css style for users using dark-mode
+    mathJax = true
