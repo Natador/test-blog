@@ -1,4 +1,4 @@
-baseURL = "natador.com"
+baseURL = "https://natador.com"
 languageCode = "en-us"
 title = "Natador's Blog"
 theme = "hugo-kiera"
