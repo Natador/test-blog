@@ -1,3 +1,9 @@
++++
+title = "Rule-Based Sequential Event Detection"
+date = 2022-03-11T18:36:39-05:00
+draft = false
++++
+
 # Rule-Based Sequential Event Detection
 Here's a simple programming question:
 > Given a time-series of temperature measurements, what is the longest continuous sequence of days during which the temperature was below freezing?
@@ -19,7 +25,8 @@ Now, let's dive in.
 ## The Leetcode Solution
 If the original question is posed in a coding interview, and you are expected to produce an answer which demonstrates a basic level of programming competency, you might come up with a solution that uses this "LeetCode" approach. Let's first visualize our dataset:
 
-![sample text](/images/Curated Event Detection_2022-03-09 19.13.27.excalidraw.png)
+![sample_text](/images/Curated_Event_Detection_2022-03-09_19.13.27.excalidraw.png)
+
 What we have is a sequence of dates and temperatures, and what we are trying to find is sub-sequences of consecutive dates, all of which are below freezing. One approach might be to go through this data one by one and keep track of these sequences as we find them. Then, all we have to do is keep track of the length of the longest sequence we've seen, and its associated beginning/end dates. Here's some Python code that does exactly this:
 
 ```python
@@ -101,15 +108,18 @@ groups_df = (
 
 What's going on here, and how does the "magic line" generate our group IDs? First, let's add an additional column `freezing?` to our dataset indicating if it is freezing.
 
-![sample text](/images/Curated Event Detection_2022-03-09 19.22.40.excalidraw.png)
+![sample_text](/images/Curated_Event_Detection_2022-03-09_19.22.40.excalidraw.png)
+
 We can spot clusters of consecutive 1's visually that we'd like to associate with one-another. More precisely, two rows are part of the same sub-sequence of "freezing days" if both adjacent rows contain 1's in the `freezing?` column. Note that the "LeetCode" solution above essentially iterates through the data and generates these values on-the-fly while we are generating them all ahead of time.
 
 So how does the above code generate these identifiers? Consider the negation of the `freezing?` column (`not freezing?` in this case)
 
-![sample text](/images/Curated Event Detection_2022-03-09 19.26.02.excalidraw.png)
+![sample_text](/images/Curated_Event_Detection_2022-03-09_19.26.02.excalidraw.png)
+
 If we do a cumulative sum over this column (time-sorted), something interesting happens.
 
-![sample text](/images/Curated Event Detection_2022-03-09 19.28.03.excalidraw.png)
+![sample_text](/images/Curated_Event_Detection_2022-03-09_19.28.03.excalidraw.png)
+
 For each freezing row, the `not freezing` column does not update the running sum (since `not freezing?` = 0 for that row). Thus, the running total stays the same for all rows in that sub-sequence of consecutive freezing rows. However, at the next non-freezing row, the running total updates because `not freezing?` = 1! So future sub-sequence indices will be greater than prior ones by at least 1. We have concisely generated a unique identifier for each sub-sequence of rows that are freezing.
 
 In the final step, we keep only `freezing?` rows, group by the unique identifier we calculated, and compute any metrics we would like (length of sequence in time, min/max/median temperature values, etc.). And just like that, we have found *all* sequences of consecutive freezing days; now we just have to take the maximum length.
