@@ -1,11 +1,11 @@
-+++
-title = "Rule-Based Sequential Event Detection"
-date = 2022-03-11T18:36:39-05:00
-draft = false
-+++
+---
+title: "Finding the Longest Cold-Snap"
+date: 2022-03-11T18:36:39-05:00
+draft: false
+---
 
-# Rule-Based Sequential Event Detection
 Here's a simple programming question:
+
 > Given a time-series of temperature measurements, what is the longest continuous sequence of days during which the temperature was below freezing?
 
 In the process of exploratory data analysis, natural follow-up questions may be:
@@ -25,7 +25,7 @@ Now, let's dive in.
 ## The Leetcode Solution
 If the original question is posed in a coding interview, and you are expected to produce an answer which demonstrates a basic level of programming competency, you might come up with a solution that uses this "LeetCode" approach. Let's first visualize our dataset:
 
-![sample_text](/images/Curated_Event_Detection_2022-03-09_19.13.27.excalidraw.png)
+{{< figure src="/images/Curated_Event_Detection_2022-03-09_19.13.27.excalidraw.png" width="450px" >}}
 
 What we have is a sequence of dates and temperatures, and what we are trying to find is sub-sequences of consecutive dates, all of which are below freezing. One approach might be to go through this data one by one and keep track of these sequences as we find them. Then, all we have to do is keep track of the length of the longest sequence we've seen, and its associated beginning/end dates. Here's some Python code that does exactly this:
 
@@ -70,12 +70,12 @@ This code is simple to understand, easy to debug, and demonstrates to the interv
 - Easy to understand
 - Easy to debug
 - Constant additional memory usage (only 3 variables)
-- Only one iteration through the list, and thus $O(n)$ runtime complexity
+- Only one iteration through the list, and thus \\(O(n)\\) runtime complexity
 
 **Cons**:
 - More work to answer follow-ups
 - Not resilient to dataset problems or modifications:
-	- If the data isn't sorted, you need to be comfortable with some more obscure Python features of `sorted` or `sort`. See [docs about `sorted`](https://docs.python.org/3/library/functions.html#sorted), specifically the `key` argument.
+	- If the data isn't sorted, you need to be comfortable with some more obscure Python features of `sorted` or `sort`. See [docs about sorted](https://docs.python.org/3/library/functions.html#sorted), specifically the `key` argument.
     - If there are multiple assets, you need to be comfortable with `itertools.groupby`, or modify the way you sort your data above.
 - Relatively slow (because [pure Python is slow](https://youtu.be/Qgevy75co8c))
 - Not very easy to parallelize
@@ -108,36 +108,36 @@ groups_df = (
 
 What's going on here, and how does the "magic line" generate our group IDs? First, let's add an additional column `freezing?` to our dataset indicating if it is freezing.
 
-![sample_text](/images/Curated_Event_Detection_2022-03-09_19.22.40.excalidraw.png)
+![sample text](/images/Curated_Event_Detection_2022-03-09_19.22.40.excalidraw.png)
 
 We can spot clusters of consecutive 1's visually that we'd like to associate with one-another. More precisely, two rows are part of the same sub-sequence of "freezing days" if both adjacent rows contain 1's in the `freezing?` column. Note that the "LeetCode" solution above essentially iterates through the data and generates these values on-the-fly while we are generating them all ahead of time.
 
 So how does the above code generate these identifiers? Consider the negation of the `freezing?` column (`not freezing?` in this case)
 
-![sample_text](/images/Curated_Event_Detection_2022-03-09_19.26.02.excalidraw.png)
+![sample text](/images/Curated_Event_Detection_2022-03-09_19.26.02.excalidraw.png)
 
 If we do a cumulative sum over this column (time-sorted), something interesting happens.
 
-![sample_text](/images/Curated_Event_Detection_2022-03-09_19.28.03.excalidraw.png)
+![sample text](/images/Curated_Event_Detection_2022-03-09_19.28.03.excalidraw.png)
 
 For each freezing row, the `not freezing` column does not update the running sum (since `not freezing?` = 0 for that row). Thus, the running total stays the same for all rows in that sub-sequence of consecutive freezing rows. However, at the next non-freezing row, the running total updates because `not freezing?` = 1! So future sub-sequence indices will be greater than prior ones by at least 1. We have concisely generated a unique identifier for each sub-sequence of rows that are freezing.
 
 In the final step, we keep only `freezing?` rows, group by the unique identifier we calculated, and compute any metrics we would like (length of sequence in time, min/max/median temperature values, etc.). And just like that, we have found *all* sequences of consecutive freezing days; now we just have to take the maximum length.
 
-That sounds great, but how do we do this in SQL? The answer is with [window functions](https://blog.jooq.org/probably-the-coolest-sql-feature-window-functions/). Window functions essentially allow us to partition our data into ordered subsets of rows called "windows" and perform computations row-by-row on the contents of both that row *and* the window it lives in. Mathematically stated, we define a window $W$ with ordered contents based on some partitioning criteria and a row $r_i$ in $W$, giving us a function roughly of the form:
+That sounds great, but how do we do this in SQL? The answer is with [window functions](https://blog.jooq.org/probably-the-coolest-sql-feature-window-functions/). Window functions essentially allow us to partition our data into ordered subsets of rows called "windows" and perform computations row-by-row on the contents of both that row *and* the window it lives in. Mathematically stated, we define a window \\(W\\) with ordered contents based on some partitioning criteria and a row \\(r_i\\) in \\(W\\), giving us a function roughly of the form:
 
-$$
+\\[
 \begin{align}
-v_i &= f(r_i, W)\\
+v_i &= f(r_i, W)\\\\
     &= f(\dots, r_{i-2}, r_{i-1}, r_i, r_{i+1}, r_{i+2}, \dots)
 \end{align}
-$$
+\\]
 
-where $v_i$ is the value of our window function. In particular, this allows us to compute the cumulative sum at row $r_i$:
+where \\(v_i\\) is the value of our window function. In particular, this allows us to compute the cumulative sum at row \\(r_i\\):
 
-$$
+\\[
 v_i = \sum_{k=0}^i r_k = r_1 + r_2 + \cdots + r_i
-$$
+\\]
 
 with respect to time as above. Here is the SQL code:
 
