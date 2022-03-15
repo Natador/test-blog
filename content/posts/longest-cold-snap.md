@@ -8,19 +8,16 @@ Here's a simple programming question:
 
 > Given a time-series of temperature measurements, what is the longest continuous sequence of days during which the temperature was below freezing?
 
-In the process of exploratory data analysis, natural follow-up questions may be:
+Pretty straightforward, right? It's the type of question you might expect to see during a technical interview or a first-year lesson on how arrays work. My motivation for discussing this goes deeper, however.
 
-> - What is the distribution of below-freezing day-sequences between multiple devices/assets?
-> - What is the longest *duration* (hours/minutes/seconds) of below-freezing readings, ignoring day borders?
-> - What if there are time-gaps, missing/bad data, or other dataset problems?
+I first encountered a modified version of this problem during an internship between my third and fourth year studying Computer Engineering. While I came up with a fairly obvious solution using an [imperative](https://en.wikipedia.org/wiki/Imperative_programming) language, it was clunky because I had to unload the data from a database, find these rule-based sub-sequences of adjacent rows, and load the result *back* into a database. I was (mildly) haunted by the idea of answering this in pure SQL, with no need to drag the data out and into a database.
 
-The choice of a programming environment, data model, etc. can greatly influence how easy or hard it is to answer these follow-ups.
+In this article, I want to discuss three solutions to this question: the "obvious" solution and two declarative solutions written in SQL (one portable, one less-so). Because this pattern has served me well in Python, I will also present the first declarative solution in [Pandas](https://pandas.pydata.org/). I certainly benefited from developing these pattern extraction "recipes", since different versions of the problem have come up over and over in my day-to-day work.
 
-In this article, I want to discuss three solutions to this question. The solutions I really want to focus on are written in a declarative style, specifically in SQL and [Pandas](https://pandas.pydata.org/) Python code. This problem first arose for me in a project I was working on in my graduate AI class as a Computer Engineering student. I spent hours writing code that extracted data from a database, analyzed it row-by-row, and finally wrote-back the solution to the database. It was only after I started working full-time that the problem came up again and I finally took the time to think of a solution in pure SQL.
-
-Finally, if you need even more motivation for why this topic is interesting, I know that at least one FAANG company has used a modified version of this question in its technical interviews. If you're looking for a job at one of these companies and have never thought about this before, I would encourage you to take 10-15 minutes to think about a solution and to write some code before continuing with the article. Experience is the best teacher, after all.
+Finally, if you need even more motivation to find this interesting, I know that at least one FAANG company has used a modified version of this question in its technical interviews. If you're looking for a job at one of these companies and have never thought about this before, I would encourage you to take 10-15 minutes to think about a solution and to write some code before continuing with the article. Experience is the best teacher, after all.
 
 Now, let's dive in.
+
 
 ## The Leetcode Solution
 If the original question is posed in a coding interview, and you are expected to produce an answer which demonstrates a basic level of programming competency, you might come up with a solution that uses this "LeetCode" approach. Let's first visualize our dataset:
@@ -122,7 +119,7 @@ If we do a cumulative sum over this column (time-sorted), something interesting 
 
 For each freezing row, the `not freezing` column does not update the running sum (since `not freezing?` = 0 for that row). Thus, the running total stays the same for all rows in that sub-sequence of consecutive freezing rows. However, at the next non-freezing row, the running total updates because `not freezing?` = 1! So future sub-sequence indices will be greater than prior ones by at least 1. We have concisely generated a unique identifier for each sub-sequence of rows that are freezing.
 
-In the final step, we keep only `freezing?` rows, group by the unique identifier we calculated, and compute any metrics we would like (length of sequence in time, min/max/median temperature values, etc.). And just like that, we have found *all* sequences of consecutive freezing days; now we just have to take the maximum length.
+In the final step, we keep only `freezing?` rows, group by the unique identifier we calculated, and compute any metrics we would like (length of sequence in time, min/max/median temperature values). And just like that, we have found *all* sequences of consecutive freezing days; now we just have to take the maximum length.
 
 That sounds great, but how do we do this in SQL? The answer is with [window functions](https://blog.jooq.org/probably-the-coolest-sql-feature-window-functions/). Window functions essentially allow us to partition our data into ordered subsets of rows called "windows" and perform computations row-by-row on the contents of both that row *and* the window it lives in. Mathematically stated, we define a window \\(W\\) with ordered contents based on some partitioning criteria and a row \\(r_i\\) in \\(W\\), giving us a function roughly of the form:
 
@@ -154,7 +151,7 @@ with dataset as (
 	from dataset
 )
 
--- Grouping, computing lengths, etc.
+-- Grouping and computing metrics
 select group_id,
 	min(meas_ts) as begin_date,
 	max(meas_ts) as end_date,
@@ -188,7 +185,7 @@ The general recipe seems to be:
 - Resilient to dataset problems
 	- You can kick out sequences with time-gaps that are too long by using either the `LAG` or `LEAD` window functions in SQL, or `.shift()` in Pandas.
 - Very fast in both environments, especially with large amounts of data
-- Easily parallelized (the Pandas code is supported by Dask, Pandas on Pyspark, etc., and any most databases will parallelize the SQL code under the hood)
+- Easily parallelized (the Pandas code is supported by Dask as well as [Pandas on Pyspark](https://spark.apache.org/docs/latest/api/python/user_guide/pandas_on_spark/index.html), and any most databases will parallelize the SQL code under the hood)
 - No additional dependencies
 
 **Cons**:
@@ -236,7 +233,7 @@ pattern (freezing_day+)
 
 tells the `MATCH_RECOGNIZE` expression to match 1 or more day(s) of freezing temperatures in sequence. This is exactly the same type of syntax as regular expressions. Also as a note, the match is *greedy* by default, i.e. it matches the *longest* sequence of rows that fit the pattern, which is what we want. [Snowflake has a fantastic tutorial](https://docs.snowflake.com/en/user-guide/match-recognize-introduction.html) for using this syntax, so I'll spare the other details of the expression.
 
-Dealing with dataset problems such as unacceptable time-gaps is easy with window functions such as `LAG`, `LEAD`, `FIRST`, etc. in the `define` or `measures` clause. Similar functionality in Python built on top of Pandas appears to be provided by the [data patterns](https://data-patterns.readthedocs.io/en/latest/readme.html) library, although I haven't worked with that one directly.
+Dealing with dataset problems such as unacceptable time-gaps is easy with window functions such as `LAG`, `LEAD`, `FIRST`, and `LAST` in the `define` or `measures` clause. Similar functionality in Python built on top of Pandas appears to be provided by the [data patterns](https://data-patterns.readthedocs.io/en/latest/readme.html) library, although I haven't worked with that one directly.
 
 **Pros**:
 - Literally built for the task

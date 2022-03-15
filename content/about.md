@@ -6,10 +6,10 @@ menu: "main"
 meta: "false"
 ---
 
-# Hello!
+Hi! I'm Nathaniel. I'm currently working at Allison Transmission in the Data Analytics and R&D group. I'm a Computer Engineering and Math major, and I'm far-more addicted to the latter.
 
-My name is Natador
+I'm still figuring out what I want to put on this blog, but you can check out some of my old student projects on my [GitHub](https://github.com/natador).
 
-This is an equation:
+## About this Blog
 
-$$y = mx + b$$
+This blog is made with [Hugo](https://gohugo.io/) and is hosted as a [Digital Ocean App](https://www.digitalocean.com/products/app-platform). The theme is [Hugo-Kiera](https://github.com/funkydan2/hugo-kiera), which I think looks pretty nice.

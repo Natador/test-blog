@@ -1,6 +1,6 @@
 baseURL = ""
 languageCode = "en-us"
-title = "Natador's Blog"
+title = "Nathaniel's Blog"
 theme = "hugo-kiera"
 
 pygmentsCodeFences = true
@@ -13,8 +13,9 @@ pygmentsCodeFences = true
     github = "natador"         #Github username
     gitlab = "natador"         #Gitlab username
     #twitter = "killbot4590"        #Twitter username
+	linkedin = "ndcantwell"
 
 [params]
-    tagline = "Personal blog for Natador"
+    tagline = "Personal blog for Nathaniel Cantwell; opinions are mine"
     disableDarkModeCSS = true # disables css style for users using dark-mode
     mathJax = true
