@@ -14,7 +14,7 @@ I first encountered a modified version of this problem during an internship betw
 
 In this article, I want to discuss three solutions to this question: the "obvious" solution and two declarative solutions written in SQL (one portable, one less-so). Because this pattern has served me well in Python, I will also present the first declarative solution in [Pandas](https://pandas.pydata.org/). I certainly benefited from developing these pattern extraction "recipes", since different versions of the problem have come up over and over in my day-to-day work.
 
-Finally, if you need even more motivation to find this interesting, I know that at least one FAANG company has used a modified version of this question in its technical interviews. If you're looking for a job at one of these companies and have never thought about this before, I would encourage you to take 10-15 minutes to think about a solution and to write some code before continuing with the article. Experience is the best teacher, after all.
+Finally, if you need even more motivation to find this interesting, I know that at least one [FAANG](https://en.wikipedia.org/wiki/Big_Tech#FANG,_FAANG,_and_MAMAA) company has used a modified version of this question in its technical interviews. If you're looking for a job at one of these companies and have never thought about this before, I would encourage you to take 10-15 minutes to think about a solution and to write some code before continuing with the article. Experience is the best teacher, after all.
 
 Now, let's dive in.
 
