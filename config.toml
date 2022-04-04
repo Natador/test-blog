@@ -12,7 +12,7 @@ pygmentsCodeFences = true
     name = "Nathaniel Cantwell"           #Author name
     github = "natador"         #Github username
     gitlab = "natador"         #Gitlab username
-    #twitter = "killbot4590"        #Twitter username
+    twitter = "natador42"        #Twitter username
 	linkedin = "ndcantwell"
 
 [params]
