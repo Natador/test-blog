@@ -6,7 +6,7 @@ menu: "main"
 meta: "false"
 ---
 
-Hi! I'm Nathaniel. I'm currently working at Allison Transmission in the Data Analytics and R&D group. I'm a Computer Engineering and Math major, and I'm far-more addicted to the latter.
+Hi! I'm Nathaniel. I'm currently working as a software engineer in Amazon Fashion. I'm a Computer Engineering and Math graduate, and I'm far more addicted to the latter.
 
 I'm still figuring out what I want to put on this blog, but you can check out some of my previous projects on my [GitHub](https://github.com/natador).
 
