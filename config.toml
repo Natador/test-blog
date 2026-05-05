@@ -1,5 +1,5 @@
 baseURL = ""
-languageCode = "en-us"
+locale = "en-us"
 title = "Nathaniel's Blog"
 theme = "hugo-kiera"
 
@@ -8,14 +8,14 @@ pygmentsCodeFences = true
 #disqusShortname = "" #Disqus shortname
 #googleAnalytics = "" #Google Analytics ID
 
-[author]
+[params]
+    tagline = "Personal blog for Nathaniel Cantwell; opinions are mine"
+    disableDarkModeCSS = true # disables css style for users using dark-mode
+    mathJax = true
+
+[params.author]
     name = "Nathaniel Cantwell"           #Author name
     github = "natador"         #Github username
     gitlab = "natador"         #Gitlab username
     twitter = "natador42"        #Twitter username
 	linkedin = "ndcantwell"
-
-[params]
-    tagline = "Personal blog for Nathaniel Cantwell; opinions are mine"
-    disableDarkModeCSS = true # disables css style for users using dark-mode
-    mathJax = true
