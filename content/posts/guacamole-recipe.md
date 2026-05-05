@@ -1,6 +1,6 @@
 ---
 title: "My Guacamole Recipe"
-date: 2025-04-13T10:00:00-04:00
+date: 2026-05-05T10:00:00-04:00
 draft: false
 ---
 
